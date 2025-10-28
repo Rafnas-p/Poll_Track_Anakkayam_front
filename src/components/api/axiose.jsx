@@ -1,13 +1,13 @@
 import axios from 'axios';
 
-const API_BASE_URL = process.env.BACKEND; // Update with your backend URL
-
+const API_BASE_URL = import.meta.env.VITE_BACKEND_URL
 const api = axios.create({
   baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },
 });
+console.log(API_BASE_URL,'API_BASE_URL');
 
 // Request interceptor to add token
 api.interceptors.request.use(
