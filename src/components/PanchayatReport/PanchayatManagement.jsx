@@ -1,14 +1,18 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import AddWardModal from '../modal/AddWardModal';
+import EditWardModal from '../modal/EditWardModal';
+import DeleteWardModal from '../modal/DeleteWardModal';
 import { getPanchayatById, getWardsByPanchayat } from '../api/panchayatApi';
 
 const PanchayatManagement = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [selectedWard, setSelectedWard] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
 
   // Fetch panchayat details
@@ -182,6 +186,14 @@ const PanchayatManagement = () => {
           error={wardsError} 
           navigate={navigate}
           searchQuery={searchQuery}
+          onEditWard={(ward) => {
+            setSelectedWard(ward);
+            setIsEditModalOpen(true);
+          }}
+          onDeleteWard={(ward) => {
+            setSelectedWard(ward);
+            setIsDeleteModalOpen(true);
+          }}
         />
       </div>
 
@@ -191,12 +203,34 @@ const PanchayatManagement = () => {
         onClose={() => setIsModalOpen(false)}
         panchayatId={id}
       />
+
+      {/* Edit Ward Modal */}
+      <EditWardModal 
+        isOpen={isEditModalOpen} 
+        onClose={() => {
+          setIsEditModalOpen(false);
+          setSelectedWard(null);
+        }}
+        ward={selectedWard}
+        panchayatId={id}
+      />
+
+      {/* Delete Ward Modal */}
+      <DeleteWardModal 
+        isOpen={isDeleteModalOpen} 
+        onClose={() => {
+          setIsDeleteModalOpen(false);
+          setSelectedWard(null);
+        }}
+        ward={selectedWard}
+        panchayatId={id}
+      />
     </>
   );
 };
 
 // Wards List Component
-const WardsList = ({ wards, isLoading, error, navigate, searchQuery }) => {
+const WardsList = ({ wards, isLoading, error, navigate, searchQuery, onEditWard, onDeleteWard }) => {
   if (isLoading) {
     return (
       <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-4 lg:p-6 shadow-lg border border-red-200/40">
@@ -280,13 +314,19 @@ const WardsList = ({ wards, isLoading, error, navigate, searchQuery }) => {
                   </svg>
                   View Ward
                 </button>
-                <button className="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold py-2 px-4 rounded-lg transition-all duration-200 flex items-center justify-center gap-2 group-hover:shadow-md">
+                <button 
+                  onClick={() => onEditWard(ward)}
+                  className="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold py-2 px-4 rounded-lg transition-all duration-200 flex items-center justify-center gap-2 group-hover:shadow-md"
+                >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                   </svg>
                   Edit
                 </button>
-                <button className="flex-1 bg-red-600 hover:bg-red-700 text-white text-sm font-semibold py-2 px-4 rounded-lg transition-all duration-200 flex items-center justify-center gap-2 group-hover:shadow-md">
+                <button 
+                  onClick={() => onDeleteWard(ward)}
+                  className="flex-1 bg-red-600 hover:bg-red-700 text-white text-sm font-semibold py-2 px-4 rounded-lg transition-all duration-200 flex items-center justify-center gap-2 group-hover:shadow-md"
+                >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                   </svg>

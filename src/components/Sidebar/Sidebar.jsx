@@ -71,30 +71,7 @@ const Sidebar = ({ isMobileMenuOpen, setIsMobileMenuOpen }) => {
             <span className="truncate">Panchayat Report</span>
           </button>
 
-          {/* Add more navigation items as needed */}
-          <button
-            onClick={() => handleNavClick('/voter-management')}
-            className="w-full flex items-center gap-3 px-3 sm:px-4 py-3 sm:py-3 rounded-xl text-white/80 hover:bg-red-600/30 hover:text-white transition-all duration-200 font-medium border border-transparent hover:border-white/20 text-sm sm:text-base"
-          >
-            <span className="w-5 h-5 bg-white/20 rounded-full flex items-center justify-center text-sm flex-shrink-0">👥</span>
-            <span className="truncate">Voter Management</span>
-          </button>
-
-          <button
-            onClick={() => handleNavClick('/booth-management')}
-            className="w-full flex items-center gap-3 px-3 sm:px-4 py-3 sm:py-3 rounded-xl text-white/80 hover:bg-red-600/30 hover:text-white transition-all duration-200 font-medium border border-transparent hover:border-white/20 text-sm sm:text-base"
-          >
-            <span className="w-5 h-5 bg-white/20 rounded-full flex items-center justify-center text-sm flex-shrink-0">🏛️</span>
-            <span className="truncate">Booth Management</span>
-          </button>
-
-          <button
-            onClick={() => handleNavClick('/ward-management')}
-            className="w-full flex items-center gap-3 px-3 sm:px-4 py-3 sm:py-3 rounded-xl text-white/80 hover:bg-red-600/30 hover:text-white transition-all duration-200 font-medium border border-transparent hover:border-white/20 text-sm sm:text-base"
-          >
-            <span className="w-5 h-5 bg-white/20 rounded-full flex items-center justify-center text-sm flex-shrink-0">🏘️</span>
-            <span className="truncate">Ward Management</span>
-          </button>
+         
         </nav>
 
         {/* Footer */}

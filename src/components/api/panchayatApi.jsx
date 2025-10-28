@@ -16,6 +16,16 @@ export const getPanchayatById = async (id) => {
   return response.data;
 };
 
+export const updatePanchayat = async (id, payload) => {
+  const response = await api.put(`/panchayats/update-panchayat/${id}`, payload);
+  return response.data;
+};
+
+export const deletePanchayat = async (id) => {
+  
+  const response = await api.delete(`/panchayats/delete-panchayat/${id}`);
+  return response.data;
+};
 export const createWard = async (wardData) => {
   const response = await api.post('/wards/create-ward', wardData);
   return response.data;
@@ -33,17 +43,35 @@ export const getBoothsByWard = async (wardId) => {
 };
 
 export const createBooth = async (boothData) => {
-  console.log(boothData,'boothData');
   
   const response = await api.post('/booths/create-Booth', boothData);
   return response.data;
 };
 // Add this function to your existing panchayatApi.jsx
 export const getBoothById = async (boothId) => {
-  console.log(boothId,'boothIdboothIdboothIdboothId');
   
   const response = await api.get(`/booths/get-Booth-by-id/${boothId}`);
-  console.log(response,'response');
   
+  return response.data;
+};
+export const updateBooth = async (id, boothData) => {
+  const response = await api.put(`/booths/update-booth/${id}`, boothData);
+  return response.data;
+};
+
+export const deleteBooth = async (id) => {
+  
+  const response = await api.delete(`/booths/delete-Booth/${id}`);
+  return response.data;
+};
+// Ward API functions
+export const updateWard = async (id, wardData) => {
+  const response = await api.put(`/wards/update-ward/${id}`, wardData);
+  return response.data;
+};
+
+export const deleteWard = async (id) => {
+  
+  const response = await api.delete(`/wards/delete-ward/${id}`);
   return response.data;
 };

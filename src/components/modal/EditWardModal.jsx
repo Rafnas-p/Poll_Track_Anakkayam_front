@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { createWard } from '../api/panchayatApi';
+import { updateWard } from '../api/panchayatApi';
 import Modal from './modal';
 
-const AddWardModal = ({ isOpen, onClose, panchayatId }) => {
+const EditWardModal = ({ isOpen, onClose, ward, panchayatId }) => {
   const queryClient = useQueryClient();
   const [formData, setFormData] = useState({
     wardNumber: '',
@@ -14,24 +14,30 @@ const AddWardModal = ({ isOpen, onClose, panchayatId }) => {
   });
   const [formError, setFormError] = useState('');
 
-  // Mutation for creating a new ward
+  // Initialize form data when ward changes
+  useEffect(() => {
+    if (ward) {
+      setFormData({
+        wardNumber: ward.wardNumber || '',
+        name: ward.name || '',
+        pollingBoothName: ward.pollingBooth?.name || '',
+        pollingBoothLatitude: ward.pollingBooth?.location?.latitude || '',
+        pollingBoothLongitude: ward.pollingBooth?.location?.longitude || '',
+      });
+    }
+  }, [ward]);
+
+  // Mutation for updating ward
   const mutation = useMutation({
-    mutationFn: createWard,
+    mutationFn: ({ id, wardData }) => updateWard(id, wardData),
     onSuccess: () => {
       queryClient.invalidateQueries(['wards', panchayatId]);
-      setFormData({ 
-        wardNumber: '', 
-        name: '', 
-        pollingBoothName: '', 
-        pollingBoothLatitude: '', 
-        pollingBoothLongitude: '' 
-      });
       setFormError('');
       onClose();
     },
     onError: (error) => {
       console.error('Mutation Error:', error);
-      setFormError(error.response?.data?.message || 'Error creating Ward');
+      setFormError(error.response?.data?.message || 'Error updating Ward');
     },
   });
 
@@ -55,7 +61,6 @@ const AddWardModal = ({ isOpen, onClose, panchayatId }) => {
     const wardData = {
       wardNumber: parseInt(formData.wardNumber),
       name: formData.name,
-      panchayat: panchayatId,
       pollingBooth: {
         name: formData.pollingBoothName || undefined,
         location: {
@@ -65,7 +70,7 @@ const AddWardModal = ({ isOpen, onClose, panchayatId }) => {
       }
     };
     
-    mutation.mutate(wardData);
+    mutation.mutate({ id: ward._id, wardData });
   };
 
   const handleClose = () => {
@@ -80,8 +85,10 @@ const AddWardModal = ({ isOpen, onClose, panchayatId }) => {
     onClose();
   };
 
+  if (!isOpen || !ward) return null;
+
   return (
-    <Modal isOpen={isOpen} onClose={handleClose} title="Add New Ward" size="lg">
+    <Modal isOpen={isOpen} onClose={handleClose} title="Edit Ward" size="lg">
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
@@ -169,7 +176,7 @@ const AddWardModal = ({ isOpen, onClose, panchayatId }) => {
             disabled={mutation.isLoading}
             className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-all duration-200 disabled:bg-red-400"
           >
-            {mutation.isLoading ? 'Adding...' : 'Add Ward'}
+            {mutation.isLoading ? 'Updating...' : 'Update Ward'}
           </button>
         </div>
       </form>
@@ -177,4 +184,4 @@ const AddWardModal = ({ isOpen, onClose, panchayatId }) => {
   );
 };
 
-export default AddWardModal;
+export default EditWardModal;

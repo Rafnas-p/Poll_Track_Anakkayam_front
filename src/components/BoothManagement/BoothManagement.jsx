@@ -3,11 +3,16 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { getBoothsByWard } from '../api/panchayatApi';
 import AddBoothModal from '../modal/AddBoothModal';
+import EditBoothModal from '../modal/EditBoothModal';
+import DeleteBoothModal from '../modal/DeleteBoothModal';
 
 const BoothManagement = () => {
   const { wardId } = useParams();
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [selectedBooth, setSelectedBooth] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
 
   // Fetch booths for this ward
@@ -23,6 +28,16 @@ const BoothManagement = () => {
     booth.code.toLowerCase().includes(searchQuery.toLowerCase()) ||
     booth.district.toLowerCase().includes(searchQuery.toLowerCase())
   ) || [];
+
+  const handleEditBooth = (booth) => {
+    setSelectedBooth(booth);
+    setIsEditModalOpen(true);
+  };
+
+  const handleDeleteBooth = (booth) => {
+    setSelectedBooth(booth);
+    setIsDeleteModalOpen(true);
+  };
 
   if (isLoading) {
     return (
@@ -158,7 +173,13 @@ const BoothManagement = () => {
       </div>
 
       {/* Booths List */}
-      <BoothsList booths={{ ...boothsData, booths: filteredBooths }} searchQuery={searchQuery} />
+      <BoothsList 
+        booths={{ ...boothsData, booths: filteredBooths }} 
+        searchQuery={searchQuery}
+        onEdit={handleEditBooth}
+        onDelete={handleDeleteBooth}
+        navigate={navigate}
+      />
 
       {/* Add Booth Modal */}
       <AddBoothModal 
@@ -167,13 +188,32 @@ const BoothManagement = () => {
         ward={boothsData?.ward}
         panchayatId={boothsData?.ward?.panchayat}
       />
+
+      {/* Edit Booth Modal */}
+      <EditBoothModal
+        isOpen={isEditModalOpen}
+        onClose={() => {
+          setIsEditModalOpen(false);
+          setSelectedBooth(null);
+        }}
+        booth={selectedBooth}
+      />
+
+      {/* Delete Booth Modal */}
+      <DeleteBoothModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => {
+          setIsDeleteModalOpen(false);
+          setSelectedBooth(null);
+        }}
+        booth={selectedBooth}
+      />
     </div>
   );
 };
 
 // Booths List Component
-const BoothsList = ({ booths, searchQuery }) => {
-  const navigate = useNavigate();
+const BoothsList = ({ booths, searchQuery, onEdit, onDelete, navigate }) => {
   const hasBooths = booths?.booths && Array.isArray(booths.booths) && booths.booths.length > 0;
 
   return (
@@ -193,7 +233,7 @@ const BoothsList = ({ booths, searchQuery }) => {
       {hasBooths ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {booths.booths.map((booth) => (
-            <div key={booth._id} className="bg-gradient-to-br from-red-50 to-white p-5 rounded-xl border-2 border-red-200 hover:border-red-400 hover:shadow-lg transition-all duration-200 cursor-pointer group">
+            <div key={booth._id} className="bg-gradient-to-br from-red-50 to-white p-5 rounded-xl border-2 border-red-200 hover:border-red-400 hover:shadow-lg transition-all duration-200 group">
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-3">
                   <div className="bg-red-600 text-white p-3 rounded-lg group-hover:scale-110 transition-transform duration-200">
@@ -232,15 +272,21 @@ const BoothsList = ({ booths, searchQuery }) => {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                   </svg>
-                  View Booth
+                  View
                 </button>
-                <button className="flex-1 bg-green-600 hover:bg-green-700 text-white text-sm font-semibold py-2 px-4 rounded-lg transition-all duration-200 flex items-center justify-center gap-2 group-hover:shadow-md">
+                <button 
+                  onClick={() => onEdit(booth)}
+                  className="flex-1 bg-green-600 hover:bg-green-700 text-white text-sm font-semibold py-2 px-4 rounded-lg transition-all duration-200 flex items-center justify-center gap-2 group-hover:shadow-md"
+                >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                   </svg>
                   Edit
                 </button>
-                <button className="flex-1 bg-red-600 hover:bg-red-700 text-white text-sm font-semibold py-2 px-4 rounded-lg transition-all duration-200 flex items-center justify-center gap-2 group-hover:shadow-md">
+                <button 
+                  onClick={() => onDelete(booth)}
+                  className="flex-1 bg-red-600 hover:bg-red-700 text-white text-sm font-semibold py-2 px-4 rounded-lg transition-all duration-200 flex items-center justify-center gap-2 group-hover:shadow-md"
+                >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                   </svg>

@@ -11,7 +11,6 @@ const AddBoothModal = ({ isOpen, onClose, ward, panchayatId }) => {
   });
   const [errors, setErrors] = useState({});
   const queryClient = useQueryClient();
-console.log(ward,'wardwardwardwardwardward');
 
   const createBoothMutation = useMutation({
     mutationFn: createBooth,
@@ -59,7 +58,7 @@ console.log(ward,'wardwardwardwardwardward');
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto">
         <div className="p-6">
           <div className="flex items-center justify-between mb-6">
@@ -98,7 +97,7 @@ console.log(ward,'wardwardwardwardwardward');
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Booth Code *
+                Booth Number *
               </label>
               <input
                 type="text"

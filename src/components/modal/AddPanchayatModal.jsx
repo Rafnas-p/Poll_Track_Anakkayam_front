@@ -18,7 +18,6 @@ const AddPanchayatModal = ({ isOpen, onClose }) => {
   const mutation = useMutation({
     mutationFn: createPanchayat,
     onSuccess: () => {
-      console.log('Panchayat created successfully');
       queryClient.invalidateQueries(['panchayats']);
       setFormData({ name: '', code: '', totalWards: '', address: '' });
       setFormError('');
@@ -45,7 +44,6 @@ const AddPanchayatModal = ({ isOpen, onClose }) => {
       setFormError('Total Wards must be a positive number');
       return;
     }
-    console.log('Submitting:', formData);
     mutation.mutate(formData);
   };
 

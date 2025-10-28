@@ -17,7 +17,6 @@ const Login = () => {
     onSuccess: (data) => {
       localStorage.setItem('token', data.data.accessToken);
       localStorage.setItem('user', JSON.stringify(data.data.admin));
-      console.log('Login successful!');
       navigate('/dashboard', { replace: true });
     },
     onError: (error) => {
